@@ -1,6 +1,17 @@
 from abc import ABC , abstractmethod
 from datetime import datetime
 import pymysql
+from typing import Union
+
+
+class DataBase:
+    def __init__(self)->None:
+            self.connection=pymysql.connect(host="localhost",
+                            user="root"
+                            ,password="1234"
+                            ,database="hospital1")
+            self.cursor=self.connection.cursor()
+         
             
 class Employee (ABC):
     
@@ -22,13 +33,14 @@ class Manager(Employee):
     
 class Doctor (Employee):
     def __init__(self, Name:str, id:str, specialization:str)->None:
+
         self.specialization=specialization
         self.Name=Name
-        self.idd=id
+        self.id=id
         
     def get_details(self) ->str:
         
-        return [self.Name]
+        return [self.Name , self.id , self.specialization] 
     
 class Patient:
     
@@ -39,24 +51,11 @@ class Patient:
         self.id=id
         
     def get_details_of_patient (self)->list:
-        return [self.Name,self.id,self.Age,self.Ailment]
+        return [self.Name , self.id, self.Age, self.Ailment]
     
-class DataEntry(Employee):
-    def __init__(self, Name:str, Id:str)->None:
-            self.connection=pymysql.connect(host="localhost",
-                            user="root"
-                            ,password="1234"
-                            ,database="hospital1")
-            self.cursor=self.connection.cursor()
-            self.Name=Name
-            self.Id=Id
-        
-    def get_details(self)->str:
-        return f"Name of reception:({self.Name})"
-    
-class DataEntryAdd():
+class DataEntryAdd:
     @staticmethod
-    def adding_record (table:str , data:Patient,db:DataEntry)->tuple:
+    def adding_record (table:str , data:Union [Patient,Doctor] ,db:DataBase)->tuple:
         if table=="Manager_hospital":
             raise PermissionError ("you don't have access here")
         placeholders = ', '.join(['%s'] * len(data))
@@ -65,60 +64,68 @@ class DataEntryAdd():
         db.connection.commit()
         return db.cursor.fetchall()
         #self.db.connection.close()
+
 class DataEntryDelete:
     @staticmethod
-    def delete_record( table:str, record_id:str,db:DataEntry)->tuple:
+    def delete_record( table:str, record_id:int,db:DataBase)->tuple:
             if table=="Manager_hospital":
                 raise PermissionError ("you don't have access here")
             
             db.cursor.execute(f"DELETE FROM {table} WHERE id = %s", (record_id,))
             db.connection.commit()
+            db.connection.close()
             return db.cursor.fetchall()
-            #self.db.connection.close()
+            
+
 class DataEntrySearch:
     @staticmethod
-    def search_records(table:str, way_to_search:str,db:DataEntry)->tuple:
+    def search_records(table:str, way_to_search:str,db:DataBase)->tuple:
                 if table=="Manager_hospital":
                     raise PermissionError ("you don't have access here")
                 
                 db.cursor.execute(f"SELECT * FROM {table} WHERE {way_to_search}")
                 db.connection.commit()
+                db.connection.close()
                 return db.cursor.fetchall()
+    
+class DataEntryPrintPrescription:
+    @staticmethod
+    def print_prescription(prescription_id:str,db:DataBase)->tuple:
+            db.cursor.execute("SELECT * FROM prescriptions WHERE id = %s", (prescription_id,))
+            db.connection.commit()
+            db.connection.close()
+            return db.cursor.fetchall()
+    
+class DataEntry(Employee,DataEntryAdd,DataEntryDelete,DataEntrySearch,DataEntryPrintPrescription):
+    def __init__(self, Name:str, Id:str)->None:
+            self.Name=Name
+            self.Id=Id
+        
+    def get_details(self)->str:
+        return f"Name of reception:({self.Name})"
+    
+
     
 class PrescriptionFactory:
     @staticmethod
-    def Prescription_create(db:DataEntry,id:str,medication:str,dosage:str,doctor:Doctor,time:datetime)->str:
+    def Prescription_create(db:DataBase,id:str,medication:str,dosage:str,doctor:str,time:datetime)->str:
         db.cursor.execute("INSERT INTO prescriptions (id, medication, dosage,doctor,date_prescribed) VALUES (%s, %s, %s, %s,%s)",
                         (id,medication, dosage,doctor,time))
         db.connection.commit()
         return f"doctor {doctor}"
             
-class DataEntryPrintPrescription:
-    @staticmethod
-    def print_prescription(prescription_id:str,db:DataEntry)->tuple:
-            db.cursor.execute("SELECT * FROM prescriptions WHERE id = %s", (prescription_id,))
-            db.connection.commit()
-            return db.cursor.fetchall()
-        
 
-        
                 
-                
+db=DataBase()              
 per1=DataEntry("kadry","033")
-pa1=Patient("name","100",66,"illness")
+pa1=Patient("name","10000",66,"illness")
 doc1=Doctor("uu",'12',"feet")
-#per1.adding_record("Patient_hospital",("kadry","108",95,"illness"),db)
-#per1.adding_record("Patient_hospital",("kadry","5",6,"illness2"),db)
-#per1.adding_record("Patient_hospital",("kadry","100",5,"illness1"),db)
-#per1.adding_record("Patient_hospital",("mohamed","800",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","8",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","900",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","1100",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","1800",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","8100",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","8010",9,"illness0"),db)
-#per1.adding_record("Patient_hospital",("mohamed","8001",9,"illness0"),db)
-PrescriptionFactory.Prescription_create(per1,"90","kk","22",doc1.get_details(),datetime.now())
+
+#DataEntry.adding_record("Patient_hospital",pa1.get_details_of_patient(),db)
+#print(DataEntry.search_records("Patient_hospital","id=10000",db))
+#DataEntry.delete_record("Patient_hospital",10000,db)
+#PrescriptionFactory.Prescription_create(db,"10","hemoclar","3 times daily",doc1.Name,datetime.now())
+#print(DataEntry.print_prescription("10",db))
 
 
 
