@@ -28,7 +28,7 @@ class Doctor (Employee):
         
     def get_details(self) ->str:
         
-        return f"doctor ({self.Name}) , specialization:({self.specialization}) "
+        return [self.Name]
     
 class Patient:
     
@@ -38,8 +38,8 @@ class Patient:
         self.Ailment=Ailment
         self.id=id
         
-    def get_details_of_patient (self)->str:
-        return f"Patient name ({self.Name}, Age ({self.Age}), Ailment ({self.Ailment}))"
+    def get_details_of_patient (self)->list:
+        return [self.Name,self.id,self.Age,self.Ailment]
     
 class DataEntry(Employee):
     def __init__(self, Name:str, Id:str)->None:
@@ -56,7 +56,7 @@ class DataEntry(Employee):
     
 class DataEntryAdd():
     @staticmethod
-    def adding_record (table:str , data:list,db:DataEntry)->tuple:
+    def adding_record (table:str , data:Patient,db:DataEntry)->tuple:
         if table=="Manager_hospital":
             raise PermissionError ("you don't have access here")
         placeholders = ', '.join(['%s'] * len(data))
@@ -84,6 +84,14 @@ class DataEntrySearch:
                 db.cursor.execute(f"SELECT * FROM {table} WHERE {way_to_search}")
                 db.connection.commit()
                 return db.cursor.fetchall()
+    
+class PrescriptionFactory:
+    @staticmethod
+    def Prescription_create(db:DataEntry,id:str,medication:str,dosage:str,doctor:Doctor,time:datetime)->str:
+        db.cursor.execute("INSERT INTO prescriptions (id, medication, dosage,doctor,date_prescribed) VALUES (%s, %s, %s, %s,%s)",
+                        (id,medication, dosage,doctor,time))
+        db.connection.commit()
+        return f"doctor {doctor}"
             
 class DataEntryPrintPrescription:
     @staticmethod
@@ -92,17 +100,13 @@ class DataEntryPrintPrescription:
             db.connection.commit()
             return db.cursor.fetchall()
         
-class PrescriptionFactory:
-    @staticmethod
-    def Prescription_create(db:DataEntry,id:str,medication:str,dosage:str,doctor:str,time:datetime)->str:
-        db.cursor.execute("INSERT INTO prescriptions (id, medication, dosage,doctor,date_prescribed) VALUES (%s, %s, %s, %s,%s)",
-                        (id,medication, dosage,doctor,time))
-        db.connection.commit()
-        return f"doctor {doctor}"
+
         
                 
                 
 per1=DataEntry("kadry","033")
+pa1=Patient("name","100",66,"illness")
+doc1=Doctor("uu",'12',"feet")
 #per1.adding_record("Patient_hospital",("kadry","108",95,"illness"),db)
 #per1.adding_record("Patient_hospital",("kadry","5",6,"illness2"),db)
 #per1.adding_record("Patient_hospital",("kadry","100",5,"illness1"),db)
@@ -114,8 +118,7 @@ per1=DataEntry("kadry","033")
 #per1.adding_record("Patient_hospital",("mohamed","8100",9,"illness0"),db)
 #per1.adding_record("Patient_hospital",("mohamed","8010",9,"illness0"),db)
 #per1.adding_record("Patient_hospital",("mohamed","8001",9,"illness0"),db)
-
-print(PrescriptionFactory.Prescription_create(per1,"88","lolo","8 times","kadry",datetime.now()))
+PrescriptionFactory.Prescription_create(per1,"90","kk","22",doc1.get_details(),datetime.now())
 
 
 
