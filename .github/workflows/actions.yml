@@ -3,7 +3,7 @@ name: Run Tests
 on:
   push:
     branches:
-      - second  # Trigger workflow on push to the 'second' branch
+      - master  # Trigger workflow on push to the 'second' branch
 
 jobs:
   test:
