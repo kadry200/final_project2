@@ -16,27 +16,32 @@ class DataBase:
 class Employee (ABC):
     
     def __init__(self ,Name:str ,id:str ,Job:str)->None :
-        self.Name=Name
-        self.Job=Job
-        self.id=id
+           self.Name=Name
+           self.Job=Job
+           self.id=id
     @abstractmethod
     def get_details(self)->str:
         pass
     
 class Manager(Employee):
     def __init__(self, Name:str, id:str)->None :
-        self.Name=Name
-        self.id=id
+
+            self.Name=Name
+            self.id=id
+
         
     def get_details(self) -> str:
         return f"Manager Name ({self.Name})"
     
 class Doctor (Employee):
     def __init__(self, Name:str, id:str, specialization:str)->None:
+        if isinstance(Name,str) and isinstance(id,str) and isinstance(specialization,str):
+             self.specialization=specialization
+             self.Name=Name
+             self.id=id
 
-        self.specialization=specialization
-        self.Name=Name
-        self.id=id
+        else:
+             raise TypeError ("this is wrong please enter the right format")
         
     def get_details(self) ->str:
         
@@ -45,10 +50,13 @@ class Doctor (Employee):
 class Patient:
     
     def __init__(self , Name:str ,id:str ,  Age:int , Ailment:str)->None:
-        self.Name=Name
-        self.Age=Age
-        self.Ailment=Ailment
-        self.id=id
+        if isinstance(Name,str) and isinstance(id,str) and isinstance(Age,int) and isinstance(Ailment,str) :
+              self.Name=Name
+              self.Age=Age
+              self.Ailment=Ailment
+              self.id=id
+        else:
+             raise TypeError ("this is wrong please enter the right format")
         
     def get_details_of_patient (self)->list:
         return [self.Name , self.id, self.Age, self.Ailment]
@@ -62,8 +70,9 @@ class DataEntryAdd:
         
         db.cursor.execute(f"INSERT INTO {table} VALUES ({placeholders})", data)
         db.connection.commit()
+        db.connection.close()
         return db.cursor.fetchall()
-        #self.db.connection.close()
+        
 
 class DataEntryDelete:
     @staticmethod
@@ -79,7 +88,7 @@ class DataEntryDelete:
 
 class DataEntrySearch:
     @staticmethod
-    def search_records(table:str, way_to_search:str,db:DataBase)->tuple:
+    def search_records(table:str, way_to_search:str,db:DataBase)->tuple: #db --------> Database
                 if table=="Manager_hospital":
                     raise PermissionError ("you don't have access here")
                 
@@ -91,6 +100,7 @@ class DataEntrySearch:
 class DataEntryPrintPrescription:
     @staticmethod
     def print_prescription(prescription_id:str,db:DataBase)->tuple:
+            
             db.cursor.execute("SELECT * FROM prescriptions WHERE id = %s", (prescription_id,))
             db.connection.commit()
             db.connection.close()
@@ -98,8 +108,11 @@ class DataEntryPrintPrescription:
     
 class DataEntry(Employee,DataEntryAdd,DataEntryDelete,DataEntrySearch,DataEntryPrintPrescription):
     def __init__(self, Name:str, Id:str)->None:
-            self.Name=Name
-            self.Id=Id
+            if isinstance(Name,str) and isinstance(Id,str):
+                self.Name=Name
+                self.Id=Id
+            else:
+               raise TypeError ("this is wrong please enter the right format")
         
     def get_details(self)->str:
         return f"Name of reception:({self.Name})"
@@ -113,17 +126,15 @@ class PrescriptionFactory:
                         (id,medication, dosage,doctor,time))
         db.connection.commit()
         return f"doctor {doctor}"
-            
-
-                
+                        
 db=DataBase()              
 per1=DataEntry("kadry","033")
-pa1=Patient("name","10000",66,"illness")
+pa1=Patient("name","1100",66,"illness")
 doc1=Doctor("uu",'12',"feet")
 
-#DataEntry.adding_record("Patient_hospital",pa1.get_details_of_patient(),db)
+DataEntry.adding_record("kadry" , pa1.get_details_of_patient()  ,db)
 #print(DataEntry.search_records("Patient_hospital","id=10000",db))
-#DataEntry.delete_record("Patient_hospital",10000,db)
+#DataEntry.delete_record("Patient_hospital",1100,db)
 #PrescriptionFactory.Prescription_create(db,"10","hemoclar","3 times daily",doc1.Name,datetime.now())
 #print(DataEntry.print_prescription("10",db))
 
