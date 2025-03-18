@@ -1,0 +1,47 @@
+@startuml mydiagram
+
+abstract class Employee {
+    +name: String
+    +id: String
+    +job: String
+    +get_details(): String
+}
+
+class Manager {
+}
+
+class Doctor {
+    +specialization: String
+}
+
+class DataEntry {
+    +add(): String
+    +delete(): String
+    +search(): String
+    +PrintPrescription(): String
+}
+
+class Patient {
+    +name: String
+    +id: int
+    +age: int
+    +Ailment: String
+    +get_details_of_patient(): String
+}
+
+class Database {
+    +host: String = "localhost"
+    +user: String = "root"
+    +password: String = "1234"
+    +database: String = "hospital1"
+}
+
+Employee <|-- Doctor
+Employee <|-- Manager
+Employee <|-- DataEntry
+
+DataEntry --> Database : has access
+Database --> Doctor : manages
+Database --> Patient : manages
+
+@enduml

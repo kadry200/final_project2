@@ -11,7 +11,6 @@ class DataBase:
                             ,password="1234"
                             ,database="hospital1")
             self.cursor=self.connection.cursor()
-         
             
 class Employee (ABC):
     
@@ -127,7 +126,7 @@ class PrescriptionFactory:
         db.connection.commit()
         return f"doctor {doctor}"
                         
-#db=DataBase()              
+#db=DataBase()
 #per1=DataEntry("kadry","033")
 #pa1=Patient("name","1100",66,"illness")
 #doc1=Doctor("uu",'12',"feet")

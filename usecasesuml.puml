@@ -1,0 +1,22 @@
+@startuml mydiagram
+
+actor Doctor
+actor Patient
+actor DataEntry
+actor Manager
+
+usecase "get_details" as UC1
+usecase "Print Prescription" as UC2
+usecase "Add/Delete/Search" as UC3
+usecase "Manage Database" as UC4
+
+Doctor --> UC1
+Patient --> UC1
+Manager --> UC1
+
+Doctor --> UC2
+
+DataEntry --> UC3
+DataEntry --> UC4
+
+@enduml
