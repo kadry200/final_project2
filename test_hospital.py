@@ -1,6 +1,5 @@
 import pytest
 from hospital import *
-import mysql
 
 
 
