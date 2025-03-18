@@ -1,0 +1,30 @@
+##to build the base image
+FROM python:latest
+
+# Use the official MySQL image from the Docker Hub
+FROM mysql:latest
+
+
+WORKDIR /hospital
+
+COPY . .
+
+# Expose the default MySQL port
+EXPOSE 3306
+
+
+RUN pip install pytest
+RUN pip install pymysql
+RUN pip install mysql-connector-python
+
+EXPOSE 7070
+
+
+CMD [ "python3", ".hospital.py" ]
+
+
+# docker run --name hos-container -d hos-image
+
+
+
+
