@@ -27,6 +27,6 @@ jobs:
           pip install pytest
 
       # Run tests
-      - name: Run Test Cases
+      - name: Run Tests
         run: |
           pytest -v -s
