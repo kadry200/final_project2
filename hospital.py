@@ -127,12 +127,12 @@ class PrescriptionFactory:
         db.connection.commit()
         return f"doctor {doctor}"
                         
-db=DataBase()              
-per1=DataEntry("kadry","033")
-pa1=Patient("name","1100",66,"illness")
-doc1=Doctor("uu",'12',"feet")
+#db=DataBase()              
+#per1=DataEntry("kadry","033")
+#pa1=Patient("name","1100",66,"illness")
+#doc1=Doctor("uu",'12',"feet")
 
-DataEntry.adding_record("kadry" , pa1.get_details_of_patient()  ,db)
+#DataEntry.adding_record("Patient_hospital", pa1.get_details_of_patient()  ,db)
 #print(DataEntry.search_records("Patient_hospital","id=10000",db))
 #DataEntry.delete_record("Patient_hospital",1100,db)
 #PrescriptionFactory.Prescription_create(db,"10","hemoclar","3 times daily",doc1.Name,datetime.now())
